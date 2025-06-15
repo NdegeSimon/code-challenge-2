@@ -25,7 +25,7 @@ If hosted, add your live site link here:
 
  View Live Site
 1. Clone the Repository
- git clone https://github.com/your-username/guest-list-manager.git
+ git clone git@github.com:NdegeSimon/code-challenge-2.git
 
 
 2. Navigate to the Project Folder
