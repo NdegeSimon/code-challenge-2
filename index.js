@@ -1,78 +1,88 @@
-// Load saved guests from localStorage when the page loads
-document.addEventListener('DOMContentLoaded', () => {
-  const savedGuests = JSON.parse(localStorage.getItem('guestList')) || [];
-  savedGuests.forEach(guest => {
-    renderGuest(guest.name, guest.attending);
-  });
-});
+// Load existing guests on page load
+document.addEventListener("DOMContentLoaded", loadGuestsFromStorage);
 
 function addGuest() {
-  const input = document.getElementById('guestName');
-  const guestName = input.value.trim();
-  const guestList = document.getElementById('guestList');
+  const input = document.getElementById("guestName");
+  const name = input.value.trim();
+  if (!name) return;
 
-  if (guestName === '') {
-    alert("Please enter a guest name.");
-    return;
-  }
-
-  const currentGuests = JSON.parse(localStorage.getItem('guestList')) || [];
-  if (currentGuests.length >= 10) {
-    alert("Guest list limit reached (10 people max).");
-    return;
-  }
-
-  renderGuest(guestName, false);
-  currentGuests.push({ name: guestName, attending: false });
-  localStorage.setItem('guestList', JSON.stringify(currentGuests));
-
-  input.value = '';
-}
-
-function renderGuest(name, attending) {
-  const guestList = document.getElementById('guestList');
-  const listItem = document.createElement('li');
-
-  const nameSpan = document.createElement('span');
-  nameSpan.className = 'guest-name';
-  nameSpan.textContent = name;
-
-  const rsvpButton = document.createElement('button');
-  rsvpButton.textContent = attending ? "Attending" : "Not Attending";
-  rsvpButton.className = 'rsvp-button';
-  if (attending) rsvpButton.classList.add('attending');
-
-  rsvpButton.onclick = function () {
-    rsvpButton.classList.toggle('attending');
-    rsvpButton.textContent = rsvpButton.textContent === "Attending" ? "Not Attending" : "Attending";
-
-    updateGuest(name, rsvpButton.textContent === "Attending");
+  const guest = {
+    name,
+    attending: false
   };
 
-  const deleteButton = document.createElement('button');
-  deleteButton.textContent = "Remove";
-  deleteButton.className = 'delete-button';
+  saveGuestToStorage(guest);
+  renderGuest(guest);
+  input.value = "";
+}
 
-  deleteButton.onclick = function () {
-    guestList.removeChild(listItem);
-    deleteGuest(name);
+function renderGuest(guest) {
+  const li = document.createElement("li");
+
+  const nameSpan = document.createElement("span");
+  nameSpan.className = "guest-name";
+  nameSpan.textContent = guest.name;
+
+  const buttonGroup = document.createElement("div");
+  buttonGroup.className = "button-group";
+
+  const rsvpBtn = document.createElement("button");
+  rsvpBtn.className = "btn rsvp-button";
+  rsvpBtn.textContent = guest.attending ? "✔ Attending" : "Attending";
+  if (guest.attending) rsvpBtn.classList.add("attending");
+
+  rsvpBtn.onclick = () => {
+    rsvpBtn.classList.toggle("attending");
+    const isAttending = rsvpBtn.classList.contains("attending");
+    rsvpBtn.textContent = isAttending ? "✔ Attending" : "Attending";
+    updateGuestStatus(guest.name, isAttending);
   };
 
-  listItem.appendChild(nameSpan);
-  listItem.appendChild(rsvpButton);
-  listItem.appendChild(deleteButton);
+  const deleteBtn = document.createElement("button");
+  deleteBtn.className = "btn delete-button";
+  deleteBtn.textContent = "Remove";
+  deleteBtn.onclick = () => {
+    li.remove();
+    deleteGuestFromStorage(guest.name);
+  };
 
-  guestList.appendChild(listItem);
+  buttonGroup.appendChild(rsvpBtn);
+  buttonGroup.appendChild(deleteBtn);
+
+  li.appendChild(nameSpan);
+  li.appendChild(buttonGroup);
+
+  document.getElementById("guestList").appendChild(li);
 }
 
-function updateGuest(name, attending) {
-  const guests = JSON.parse(localStorage.getItem('guestList')) || [];
-  const updated = guests.map(g => g.name === name ? { ...g, attending } : g);
-  localStorage.setItem('guestList', JSON.stringify(updated));
+function saveGuestToStorage(guest) {
+  const guests = getGuestsFromStorage();
+  guests.push(guest);
+  localStorage.setItem("guests", JSON.stringify(guests));
 }
 
-function deleteGuest(name) {
-  const guests = JSON.parse(localStorage.getItem('guestList')) || [];
-  const updated = guests.filter(g => g.name !== name);
-  localStorage.setItem('guestList', JSON.stringify(updated));
+function getGuestsFromStorage() {
+  return JSON.parse(localStorage.getItem("guests")) || [];
+}
+
+function loadGuestsFromStorage() {
+  const guests = getGuestsFromStorage();
+  guests.forEach(renderGuest);
+}
+
+function deleteGuestFromStorage(name) {
+  let guests = getGuestsFromStorage();
+  guests = guests.filter(guest => guest.name !== name);
+  localStorage.setItem("guests", JSON.stringify(guests));
+}
+
+function updateGuestStatus(name, attending) {
+  const guests = getGuestsFromStorage();
+  const updated = guests.map(guest => {
+    if (guest.name === name) {
+      guest.attending = attending;
+    }
+    return guest;
+  });
+  localStorage.setItem("guests", JSON.stringify(updated));
 }

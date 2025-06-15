@@ -1,16 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Guest List App</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Event Guest List</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
   <div class="container">
-    <h2>Guest List</h2>
-    <input type="text" id="guestName" placeholder="Enter guest name">
-    <button onclick="addGuest()">Add Guest</button>
+    <h1> Event Guest List</h1>
+
+    <div class="form-group">
+      <input type="text" id="guestName" placeholder="Enter guest name" />
+      <button onclick="addGuest()">Add Guest</button>
+    </div>
 
     <ul id="guestList"></ul>
   </div>
