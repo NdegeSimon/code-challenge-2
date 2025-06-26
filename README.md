@@ -1,4 +1,6 @@
 Event Guest List Manager
+
+
 A simple, interactive web application that allows users to add, view, and remove guest names for an event. Built using HTML, CSS, and JavaScript, this project demonstrates dynamic DOM manipulation and browser storage using localStorage.
 
  Features
